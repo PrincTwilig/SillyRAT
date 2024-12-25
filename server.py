@@ -607,6 +607,8 @@ class INTERFACE(COMMCENTER):
                     self.c_sysinfo()
                 elif vals[0] == "screenshot":
                     self.c_screenshot()
+                else:
+                    pull.error("Invalid Command!")
             except Exception as e:
                 # failed execution
                 pull.error("Failed to execute command!")
