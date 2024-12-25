@@ -503,20 +503,24 @@ class INTERFACE(COMMCENTER):
     def accept_threads(self):
         self.SOCKET.listen(10)
 
-        while self.RUNNER:
-            conn, addr = self.SOCKET.accept()
-            is_valid = True
+        try:
+            while self.RUNNER:
+                conn, addr = self.SOCKET.accept()
+                is_valid = True
 
-            self.COUNTER += 1
-            client = CLIENT(conn, addr)
-            client.engage()
+                self.COUNTER += 1
+                client = CLIENT(conn, addr)
+                client.engage()
 
-            self.CLIENTS.append(
-                (
-                    self.COUNTER,
-                    client
+                self.CLIENTS.append(
+                    (
+                        self.COUNTER,
+                        client
+                    )
                 )
-            )
+        except KeyboardInterrupt:
+            self.RUNNER = False
+            self.SOCKET.close()
 
 
     def accept(self):

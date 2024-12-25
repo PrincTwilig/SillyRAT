@@ -110,13 +110,25 @@ class CLIENT:
     def engage(self):
         self.SOCK = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
-        while True:
-            try:
-                # print("Connecting To: %s:%d" % (self.ipaddress, self.port))
-                self.SOCK.connect((self.ipaddress, self.port))
-            except:
-                # print("Failed to Connect. Trying Again!")
-                time.sleep(5)
-                continue
+        try:
+            while True:
+                try:
+                    print("Connecting To: %s:%d" % (self.ipaddress, self.port))
+                    self.SOCK.connect((self.ipaddress, self.port))
+                except:
+                    print("Failed to Connect. Trying Again!")
+                    time.sleep(5)
+                    self.SOCK = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    continue
 
-            self.acceptor()
+                try:
+                    self.acceptor()
+                except:
+                    print("Connection Lost. Retrying!")
+                    self.SOCK.close()
+                    time.sleep(5)
+                    continue
+        except KeyboardInterrupt:
+            print("Exiting!")
+            self.SOCK.close()
+            sys.exit(0)
