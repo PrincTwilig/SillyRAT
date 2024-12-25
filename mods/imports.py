@@ -7,6 +7,8 @@ import os
 import tabulate
 import signal
 import shlex
+import shutil
+import base64
 import platform
 import io
 import psutil

