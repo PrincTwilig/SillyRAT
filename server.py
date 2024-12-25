@@ -303,7 +303,7 @@ class CLIENT:
                 break
         rtval = self.MESSAGE
         self.MESSAGE = ""
-    return rtval
+        return rtval
 
 class COMMCENTER:
 
